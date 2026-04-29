@@ -1,232 +1,346 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing</title>
-<style>
-  :root {
-    --bg: #fafafa;
-    --fg: #1a1a1a;
-    --muted: #666;
-    --accent: #2a5d9f;
-    --border: #e2e2e2;
-    --row-alt: #f3f3f3;
-    --header-bg: #efefef;
-  }
-  * { box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--fg);
-    margin: 0;
-    line-height: 1.55;
-  }
-  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
-  h1 {
-    font-size: 1.9rem;
-    line-height: 1.25;
-    margin: 0 0 14px;
-    text-align: center;
-  }
-  .authors { text-align: center; color: var(--fg); margin-bottom: 4px; }
-  .affiliations { text-align: center; color: var(--muted); font-size: 0.95rem; margin-bottom: 18px; }
-  .links { text-align: center; margin-bottom: 36px; }
-  .links a {
-    display: inline-block;
-    margin: 0 6px;
-    padding: 8px 16px;
-    background: var(--accent);
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.92rem;
-  }
-  .links a:hover { background: #1d4373; }
-  h2 {
-    font-size: 1.3rem;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 6px;
-    margin-top: 42px;
-  }
-  h3 { font-size: 1.1rem; margin-top: 28px; color: var(--accent); }
-  .abstract { font-size: 0.97rem; text-align: justify; }
-  .conditions-legend {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 14px 18px;
-    margin-top: 16px;
-    font-size: 0.92rem;
-  }
-  .conditions-legend dt { font-weight: 600; color: var(--accent); margin-top: 6px; }
-  .conditions-legend dd { margin: 0 0 6px 0; color: var(--muted); }
-  .table-wrap { overflow-x: auto; margin-top: 14px; }
-  table.audio-grid {
-    border-collapse: collapse;
-    width: 100%;
-    background: white;
-    font-size: 0.88rem;
-  }
-  table.audio-grid th, table.audio-grid td {
-    border: 1px solid var(--border);
-    padding: 8px 10px;
-    vertical-align: middle;
-    text-align: center;
-  }
-  table.audio-grid thead th {
-    background: var(--header-bg);
-    font-weight: 600;
-    position: sticky;
-    top: 0;
-  }
-  table.audio-grid td.transcript {
-    text-align: left;
-    font-style: italic;
-    color: #333;
-    min-width: 220px;
-    max-width: 320px;
-  }
-  table.audio-grid tbody tr:nth-child(even) td { background: var(--row-alt); }
-  table.audio-grid tbody tr:nth-child(even) td.transcript { background: var(--row-alt); }
-  audio { width: 170px; height: 32px; }
-  .footnote { color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
-</style>
+  <meta charset="utf-8">
+  <title>Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Demo page for Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing. Audio samples for Indian English and Korean English under each Table 1 condition.">
+  <meta name="keywords" content="accented ASR, few-shot, accent synthesis, LLM phoneme editing, TTS adaptation, Yurii Halychanskyi">
+  <meta name="author" content="Yurii Halychanskyi, Nimet Beyza Bozdag, Mark Hasegawa-Johnson, Dilek Hakkani-Tur, Volodymyr Kindratenko">
+  <meta property="og:title" content="Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing">
+  <meta property="og:description" content="Audio samples comparing American TTS, Adapt-only, Adapt + LLM, Adapt + Random phonemes, Adapt + GT (oracle), and real accented speech.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --muted: #4b5563;
+      --accent: #0b66c2;
+      --border: #e5e7eb;
+      --surface: #f5f7fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.55;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 48px 18px 80px;
+    }
+    header { text-align: center; }
+    header h1 {
+      font-size: clamp(1.9rem, 2.8vw, 2.6rem);
+      margin: 0 0 0.5rem;
+      line-height: 1.25;
+    }
+    header .authors,
+    header .affiliation,
+    header .contact {
+      margin: 0.2rem 0;
+      font-size: 0.98rem;
+    }
+    header .affiliation span { display: block; }
+    header .status {
+      margin-top: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+    .quick-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .quick-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--fg);
+      font-weight: 600;
+    }
+    .quick-links a:hover {
+      text-decoration: none;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    section { margin-top: 40px; }
+    section h2 { margin: 0 0 16px; font-size: 1.4rem; }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 20px 22px;
+      margin-top: 20px;
+    }
+    .card p { margin: 0.4rem 0; }
+    .card.abstract p { text-align: justify; }
+    .conditions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .condition {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 16px 18px;
+    }
+    .condition h4 {
+      margin: 0 0 6px;
+      font-size: 0.92rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .condition p {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .accent-block { margin: 18px 0 28px; }
+    .accent-block h3 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+    .table-intro {
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    thead {
+      background: var(--surface);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      vertical-align: middle;
+      text-align: left;
+    }
+    td.transcript {
+      min-width: 220px;
+      max-width: 320px;
+      font-style: italic;
+    }
+    audio { width: 180px; }
+    footer {
+      margin-top: 64px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    @media (max-width: 760px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead { display: none; }
+      tr {
+        margin-bottom: 16px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      td { border: none; padding: 6px 0; }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      audio { width: 100%; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
+  <div class="wrap">
+    <header>
+      <h1>Few-Shot Accent Synthesis for ASR<br>with LLM-Guided Phoneme Editing</h1>
+      <p class="authors">
+        Yurii Halychanskyi<sup>1,2</sup>,
+        Nimet Beyza Bozdag<sup>1</sup>,
+        Mark Hasegawa-Johnson<sup>1</sup>,
+        Dilek Hakkani-Tür<sup>1</sup>,
+        Volodymyr Kindratenko<sup>1,2</sup>
+      </p>
+      <p class="affiliation">
+        <span><sup>1</sup> University of Illinois Urbana-Champaign, Urbana, IL, USA</span>
+        <span><sup>2</sup> National Center for Supercomputing Applications, Urbana, IL, USA</span>
+      </p>
+      <p class="contact"><a href="mailto:yuriih2@illinois.edu">yuriih2@illinois.edu</a></p>
+      <p class="status">Submitted to Interspeech 2026</p>
+    </header>
 
-<h1>Few-Shot Accent Synthesis for ASR<br>with LLM-Guided Phoneme Editing</h1>
+    <section>
+      <div class="quick-links" aria-label="Primary links">
+        <a href="paper.pdf">Paper (PDF)</a>
+        <a href="https://github.com/" target="_blank" rel="noopener">Code</a>
+      </div>
+    </section>
 
-<p class="authors">
-  Yurii Halychanskyi<sup>1,2</sup>,
-  Nimet Beyza Bozdag<sup>1</sup>,
-  Mark Hasegawa-Johnson<sup>1</sup>,
-  Dilek Hakkani-Tür<sup>1</sup>,
-  Volodymyr Kindratenko<sup>1,2</sup>
-</p>
-<p class="affiliations">
-  <sup>1</sup> University of Illinois Urbana-Champaign &nbsp;·&nbsp;
-  <sup>2</sup> National Center for Supercomputing Applications
-</p>
+    <section>
+      <h2>Abstract</h2>
+      <div class="card abstract">
+        <p>Accented automatic speech recognition (ASR) often degrades due to the limited availability of accented training data. Prior work has explored accent modeling in low-resource settings, but existing approaches typically require minutes to hours of labeled speech, which may still be impractical for truly scarce accent scenarios. We propose a pipeline that adapts a text-to-speech (TTS) decoder to a target-accent speaker using fewer than ten reference utterances, and employs large language model (LLM)-based phoneme editing to generate accent-conditioned pronunciations. The resulting synthetic speech is used to fine-tune a self-supervised ASR model. Experiments demonstrate consistent word error rate (WER) reductions on real accented speech, including cross-speaker evaluation and ultra-low data regimes. A matched-rate random phoneme baseline shows that phoneme-space perturbation itself is a strong form of augmentation, while LLM-guided edits provide additional gains through accent-conditioned structure.</p>
+      </div>
+    </section>
 
-<p class="links">
-  <a href="paper.pdf">Paper (PDF)</a>
-  <a href="https://github.com/" target="_blank" rel="noopener">Code</a>
-</p>
+    <section>
+      <h2>System Conditions</h2>
+      <p class="table-intro">
+        The audio samples below correspond to the conditions reported in Table&nbsp;1 of the paper.
+      </p>
+      <div class="conditions-grid">
+        <div class="condition">
+          <h4>American TTS</h4>
+          <p>Backbone TTS with a Standard American speaker — no adaptation, no phoneme editing.</p>
+        </div>
+        <div class="condition">
+          <h4>Adapt-only</h4>
+          <p>TTS decoder adapted to the target-accent speaker from fewer than ten reference utterances; phoneme sequence unchanged.</p>
+        </div>
+        <div class="condition">
+          <h4>Adapt + LLM</h4>
+          <p>Adapted decoder with phonemes edited by an LLM toward the target accent — the proposed full system.</p>
+        </div>
+        <div class="condition">
+          <h4>Adapt + Random</h4>
+          <p>Adapted decoder with random, matched-rate phoneme perturbations — baseline isolating the augmentation effect.</p>
+        </div>
+        <div class="condition">
+          <h4>Adapt + GT (oracle)</h4>
+          <p>Adapted decoder with phonemes taken from the L2-ARCTIC ground-truth perceived canonical labels.</p>
+        </div>
+        <div class="condition">
+          <h4>Real accent</h4>
+          <p>Original recordings from the target-accent speaker (TNI for Indian English, HKK for Korean English).</p>
+        </div>
+      </div>
+    </section>
 
-<h2>Abstract</h2>
-<p class="abstract">
-  Accented automatic speech recognition (ASR) often degrades due to the limited availability of accented training data.
-  Prior work has explored accent modeling in low-resource settings, but existing approaches typically require
-  minutes to hours of labeled speech, which may still be impractical for truly scarce accent scenarios.
-  We propose a pipeline that adapts a text-to-speech (TTS) decoder to a target-accent speaker using fewer than
-  ten reference utterances, and employs large language model (LLM)-based phoneme editing to generate
-  accent-conditioned pronunciations. The resulting synthetic speech is used to fine-tune a self-supervised ASR model.
-  Experiments demonstrate consistent word error rate (WER) reductions on real accented speech, including cross-speaker
-  evaluation and ultra-low data regimes. A matched-rate random phoneme baseline shows that phoneme-space perturbation
-  itself is a strong form of augmentation, while LLM-guided edits provide additional gains through accent-conditioned
-  structure.
-</p>
+    <section>
+      <h2>Audio Samples</h2>
+      <p class="table-intro">
+        All conditions use the same six L2-ARCTIC prompts. Synthetic audio is produced by the same pipeline used to generate the training corpus reported in the paper.
+      </p>
 
-<h2>System Conditions</h2>
-<p>The samples below correspond to the conditions reported in Table 1 of the paper:</p>
-<dl class="conditions-legend">
-  <dt>American TTS</dt>
-  <dd>Backbone TTS with Standard American speaker — no adaptation, no phoneme editing.</dd>
-  <dt>Adapt-only</dt>
-  <dd>TTS decoder adapted to the target-accent speaker from &lt;10 reference utterances; phoneme sequence unchanged.</dd>
-  <dt>Adapt + LLM</dt>
-  <dd>Adapted decoder with phonemes edited by an LLM toward the target accent (the proposed full system).</dd>
-  <dt>Adapt + Random phonemes</dt>
-  <dd>Adapted decoder with random, matched-rate phoneme perturbations — baseline isolating the augmentation effect.</dd>
-  <dt>Adapt + GT (oracle)</dt>
-  <dd>Adapted decoder with phonemes taken from the L2-ARCTIC ground-truth perceived canonical labels.</dd>
-  <dt>Real accent</dt>
-  <dd>Original recordings from the target-accent speaker (TNI for Indian English, HKK for Korean English).</dd>
-</dl>
+      <div class="accent-block" id="indian">
+        <h3>Indian English</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Transcript</th>
+              <th>American TTS</th>
+              <th>Adapt-only</th>
+              <th>Adapt + LLM</th>
+              <th>Adapt + Random</th>
+              <th>Adapt + GT</th>
+              <th>Real accent</th>
+            </tr>
+          </thead>
+          <tbody id="indian-tbody"></tbody>
+        </table>
+      </div>
 
-<h2>Audio Samples</h2>
+      <div class="accent-block" id="korean">
+        <h3>Korean English</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Transcript</th>
+              <th>American TTS</th>
+              <th>Adapt-only</th>
+              <th>Adapt + LLM</th>
+              <th>Adapt + Random</th>
+              <th>Adapt + GT</th>
+              <th>Real accent</th>
+            </tr>
+          </thead>
+          <tbody id="korean-tbody"></tbody>
+        </table>
+      </div>
+    </section>
 
-<h3>Indian English</h3>
-<div class="table-wrap">
-<table class="audio-grid">
-  <thead>
-    <tr>
-      <th>Transcript</th>
-      <th>American TTS</th>
-      <th>Adapt-only</th>
-      <th>Adapt + LLM</th>
-      <th>Adapt + Random</th>
-      <th>Adapt + GT (oracle)</th>
-      <th>Real accent</th>
-    </tr>
-  </thead>
-  <tbody id="indian-tbody"></tbody>
-</table>
-</div>
+    <footer>
+      <p>&copy; 2026 The authors. Hosted as the project page accompanying the paper.</p>
+    </footer>
+  </div>
 
-<h3>Korean English</h3>
-<div class="table-wrap">
-<table class="audio-grid">
-  <thead>
-    <tr>
-      <th>Transcript</th>
-      <th>American TTS</th>
-      <th>Adapt-only</th>
-      <th>Adapt + LLM</th>
-      <th>Adapt + Random</th>
-      <th>Adapt + GT (oracle)</th>
-      <th>Real accent</th>
-    </tr>
-  </thead>
-  <tbody id="korean-tbody"></tbody>
-</table>
-</div>
+  <script>
+    const utterances = [
+      { id: "arctic_a0006", text: "God bless 'em, I hope I'll go on seeing them forever." },
+      { id: "arctic_a0010", text: "I'm playing a single hand in what looks like a losing game." },
+      { id: "arctic_a0013", text: "He was a head shorter than his companion, of almost delicate physique." },
+      { id: "arctic_a0022", text: "Hardly were our plans made public before we were met by powerful opposition." },
+      { id: "arctic_a0036", text: "She turned in at the hotel." },
+      { id: "arctic_a0048", text: "Cromwell put a hand to his head." },
+    ];
 
-<p class="footnote">
-  All conditions use the same six L2-ARCTIC prompts. Synthetic audio is produced by the same pipeline used to
-  generate the training corpus reported in the paper.
-</p>
+    const conditions = [
+      { key: "american_tts", label: "American TTS" },
+      { key: "adapt_only",   label: "Adapt-only" },
+      { key: "adapt_llm",    label: "Adapt + LLM" },
+      { key: "adapt_random", label: "Adapt + Random" },
+      { key: "adapt_gt",     label: "Adapt + GT" },
+      { key: "real",         label: "Real accent" },
+    ];
 
-</div>
+    function buildRows(accent, tbodyId) {
+      const tbody = document.getElementById(tbodyId);
+      utterances.forEach(u => {
+        const tr = document.createElement("tr");
+        const td0 = document.createElement("td");
+        td0.className = "transcript";
+        td0.setAttribute("data-label", "Transcript");
+        td0.textContent = u.text;
+        tr.appendChild(td0);
+        conditions.forEach(c => {
+          const td = document.createElement("td");
+          td.setAttribute("data-label", c.label);
+          const audio = document.createElement("audio");
+          audio.controls = true;
+          audio.preload = "none";
+          audio.src = `audio/${accent}/${c.key}/${u.id}.wav`;
+          td.appendChild(audio);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
 
-<script>
-const utterances = [
-  { id: "arctic_a0006", text: "God bless 'em, I hope I'll go on seeing them forever." },
-  { id: "arctic_a0010", text: "I'm playing a single hand in what looks like a losing game." },
-  { id: "arctic_a0013", text: "He was a head shorter than his companion, of almost delicate physique." },
-  { id: "arctic_a0022", text: "Hardly were our plans made public before we were met by powerful opposition." },
-  { id: "arctic_a0036", text: "She turned in at the hotel." },
-  { id: "arctic_a0048", text: "Cromwell put a hand to his head." },
-];
-
-const conditions = ["american_tts", "adapt_only", "adapt_llm", "adapt_random", "adapt_gt", "real"];
-
-function buildRows(accent, tbodyId) {
-  const tbody = document.getElementById(tbodyId);
-  utterances.forEach(u => {
-    const tr = document.createElement("tr");
-    const td0 = document.createElement("td");
-    td0.className = "transcript";
-    td0.textContent = u.text;
-    tr.appendChild(td0);
-    conditions.forEach(c => {
-      const td = document.createElement("td");
-      const audio = document.createElement("audio");
-      audio.controls = true;
-      audio.preload = "none";
-      audio.src = `audio/${accent}/${c}/${u.id}.wav`;
-      td.appendChild(audio);
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-}
-
-buildRows("indian", "indian-tbody");
-buildRows("korean", "korean-tbody");
-</script>
-
+    buildRows("indian", "indian-tbody");
+    buildRows("korean", "korean-tbody");
+  </script>
 </body>
 </html>
