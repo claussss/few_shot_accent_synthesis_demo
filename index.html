@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --accent: #2a5d9f;
+    --border: #e2e2e2;
+    --row-alt: #f3f3f3;
+    --header-bg: #efefef;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 {
+    font-size: 1.9rem;
+    line-height: 1.25;
+    margin: 0 0 14px;
+    text-align: center;
+  }
+  .authors { text-align: center; color: var(--fg); margin-bottom: 4px; }
+  .affiliations { text-align: center; color: var(--muted); font-size: 0.95rem; margin-bottom: 18px; }
+  .links { text-align: center; margin-bottom: 36px; }
+  .links a {
+    display: inline-block;
+    margin: 0 6px;
+    padding: 8px 16px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.92rem;
+  }
+  .links a:hover { background: #1d4373; }
+  h2 {
+    font-size: 1.3rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 6px;
+    margin-top: 42px;
+  }
+  h3 { font-size: 1.1rem; margin-top: 28px; color: var(--accent); }
+  .abstract { font-size: 0.97rem; text-align: justify; }
+  .conditions-legend {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 0.92rem;
+  }
+  .conditions-legend dt { font-weight: 600; color: var(--accent); margin-top: 6px; }
+  .conditions-legend dd { margin: 0 0 6px 0; color: var(--muted); }
+  .table-wrap { overflow-x: auto; margin-top: 14px; }
+  table.audio-grid {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+    font-size: 0.88rem;
+  }
+  table.audio-grid th, table.audio-grid td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    vertical-align: middle;
+    text-align: center;
+  }
+  table.audio-grid thead th {
+    background: var(--header-bg);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+  }
+  table.audio-grid td.transcript {
+    text-align: left;
+    font-style: italic;
+    color: #333;
+    min-width: 220px;
+    max-width: 320px;
+  }
+  table.audio-grid tbody tr:nth-child(even) td { background: var(--row-alt); }
+  table.audio-grid tbody tr:nth-child(even) td.transcript { background: var(--row-alt); }
+  audio { width: 170px; height: 32px; }
+  .footnote { color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Few-Shot Accent Synthesis for ASR<br>with LLM-Guided Phoneme Editing</h1>
+
+<p class="authors">
+  Yurii Halychanskyi<sup>1,2</sup>,
+  Nimet Beyza Bozdag<sup>1</sup>,
+  Mark Hasegawa-Johnson<sup>1</sup>,
+  Dilek Hakkani-Tür<sup>1</sup>,
+  Volodymyr Kindratenko<sup>1,2</sup>
+</p>
+<p class="affiliations">
+  <sup>1</sup> University of Illinois Urbana-Champaign &nbsp;·&nbsp;
+  <sup>2</sup> National Center for Supercomputing Applications
+</p>
+
+<p class="links">
+  <a href="paper.pdf">Paper (PDF)</a>
+  <a href="https://github.com/" target="_blank" rel="noopener">Code</a>
+</p>
+
+<h2>Abstract</h2>
+<p class="abstract">
+  Accented automatic speech recognition (ASR) often degrades due to the limited availability of accented training data.
+  Prior work has explored accent modeling in low-resource settings, but existing approaches typically require
+  minutes to hours of labeled speech, which may still be impractical for truly scarce accent scenarios.
+  We propose a pipeline that adapts a text-to-speech (TTS) decoder to a target-accent speaker using fewer than
+  ten reference utterances, and employs large language model (LLM)-based phoneme editing to generate
+  accent-conditioned pronunciations. The resulting synthetic speech is used to fine-tune a self-supervised ASR model.
+  Experiments demonstrate consistent word error rate (WER) reductions on real accented speech, including cross-speaker
+  evaluation and ultra-low data regimes. A matched-rate random phoneme baseline shows that phoneme-space perturbation
+  itself is a strong form of augmentation, while LLM-guided edits provide additional gains through accent-conditioned
+  structure.
+</p>
+
+<h2>System Conditions</h2>
+<p>The samples below correspond to the conditions reported in Table 1 of the paper:</p>
+<dl class="conditions-legend">
+  <dt>American TTS</dt>
+  <dd>Backbone TTS with Standard American speaker — no adaptation, no phoneme editing.</dd>
+  <dt>Adapt-only</dt>
+  <dd>TTS decoder adapted to the target-accent speaker from &lt;10 reference utterances; phoneme sequence unchanged.</dd>
+  <dt>Adapt + LLM</dt>
+  <dd>Adapted decoder with phonemes edited by an LLM toward the target accent (the proposed full system).</dd>
+  <dt>Adapt + Random phonemes</dt>
+  <dd>Adapted decoder with random, matched-rate phoneme perturbations — baseline isolating the augmentation effect.</dd>
+  <dt>Adapt + GT (oracle)</dt>
+  <dd>Adapted decoder with phonemes taken from the L2-ARCTIC ground-truth perceived canonical labels.</dd>
+  <dt>Real accent</dt>
+  <dd>Original recordings from the target-accent speaker (TNI for Indian English, HKK for Korean English).</dd>
+</dl>
+
+<h2>Audio Samples</h2>
+
+<h3>Indian English</h3>
+<div class="table-wrap">
+<table class="audio-grid">
+  <thead>
+    <tr>
+      <th>Transcript</th>
+      <th>American TTS</th>
+      <th>Adapt-only</th>
+      <th>Adapt + LLM</th>
+      <th>Adapt + Random</th>
+      <th>Adapt + GT (oracle)</th>
+      <th>Real accent</th>
+    </tr>
+  </thead>
+  <tbody id="indian-tbody"></tbody>
+</table>
+</div>
+
+<h3>Korean English</h3>
+<div class="table-wrap">
+<table class="audio-grid">
+  <thead>
+    <tr>
+      <th>Transcript</th>
+      <th>American TTS</th>
+      <th>Adapt-only</th>
+      <th>Adapt + LLM</th>
+      <th>Adapt + Random</th>
+      <th>Adapt + GT (oracle)</th>
+      <th>Real accent</th>
+    </tr>
+  </thead>
+  <tbody id="korean-tbody"></tbody>
+</table>
+</div>
+
+<p class="footnote">
+  All conditions use the same six L2-ARCTIC prompts. Synthetic audio is produced by the same pipeline used to
+  generate the training corpus reported in the paper.
+</p>
+
+</div>
+
+<script>
+const utterances = [
+  { id: "arctic_a0006", text: "God bless 'em, I hope I'll go on seeing them forever." },
+  { id: "arctic_a0010", text: "I'm playing a single hand in what looks like a losing game." },
+  { id: "arctic_a0013", text: "He was a head shorter than his companion, of almost delicate physique." },
+  { id: "arctic_a0022", text: "Hardly were our plans made public before we were met by powerful opposition." },
+  { id: "arctic_a0036", text: "She turned in at the hotel." },
+  { id: "arctic_a0048", text: "Cromwell put a hand to his head." },
+];
+
+const conditions = ["american_tts", "adapt_only", "adapt_llm", "adapt_random", "adapt_gt", "real"];
+
+function buildRows(accent, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  utterances.forEach(u => {
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td");
+    td0.className = "transcript";
+    td0.textContent = u.text;
+    tr.appendChild(td0);
+    conditions.forEach(c => {
+      const td = document.createElement("td");
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.preload = "none";
+      audio.src = `audio/${accent}/${c}/${u.id}.wav`;
+      td.appendChild(audio);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+buildRows("indian", "indian-tbody");
+buildRows("korean", "korean-tbody");
+</script>
+
+</body>
+</html>
