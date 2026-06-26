@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing</title>
+  <title>Few-Shot Synthetic Accented Speech for ASR Fine-Tuning: What Helps and When?</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Demo page for Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing. Audio samples for Indian English and Korean English under each Table 1 condition.">
-  <meta name="keywords" content="accented ASR, few-shot, accent synthesis, LLM phoneme editing, TTS adaptation, Yurii Halychanskyi">
+  <meta name="description" content="Demo page for 'Few-Shot Synthetic Accented Speech for ASR Fine-Tuning: What Helps and When?'. Audio samples for Indian English and Korean English under each Table 1 condition.">
+  <meta name="keywords" content="accented ASR, few-shot, synthetic accented speech, ASR fine-tuning, phoneme editing, TTS adaptation, Yurii Halychanskyi">
   <meta name="author" content="Yurii Halychanskyi, Nimet Beyza Bozdag, Mark Hasegawa-Johnson, Dilek Hakkani-Tur, Volodymyr Kindratenko">
-  <meta property="og:title" content="Few-Shot Accent Synthesis for ASR with LLM-Guided Phoneme Editing">
+  <meta property="og:title" content="Few-Shot Synthetic Accented Speech for ASR Fine-Tuning: What Helps and When?">
   <meta property="og:description" content="Audio samples comparing American TTS, Adapt-only, Adapt + LLM, Adapt + Random phonemes, Adapt + GT (oracle), and real accented speech.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -199,7 +199,7 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Few-Shot Accent Synthesis for ASR<br>with LLM-Guided Phoneme Editing</h1>
+      <h1>Few-Shot Synthetic Accented Speech for ASR Fine-Tuning:<br>What Helps and When?</h1>
       <p class="authors">
         Yurii Halychanskyi<sup>1,2</sup>,
         Nimet Beyza Bozdag<sup>1</sup>,
@@ -216,15 +216,15 @@
 
     <section>
       <div class="quick-links" aria-label="Primary links">
-        <a href="paper.pdf">Paper (PDF)</a>
-        <a href="https://github.com/" target="_blank" rel="noopener">Code</a>
+        <a href="https://arxiv.org/abs/2604.27273" target="_blank" rel="noopener">Paper (arXiv)</a>
+        <a aria-disabled="true" title="Code release coming soon">Code (coming soon)</a>
       </div>
     </section>
 
     <section>
       <h2>Abstract</h2>
       <div class="card abstract">
-        <p>Accented automatic speech recognition (ASR) often degrades due to the limited availability of accented training data. Prior work has explored accent modeling in low-resource settings, but existing approaches typically require minutes to hours of labeled speech, which may still be impractical for truly scarce accent scenarios. We propose a pipeline that adapts a text-to-speech (TTS) decoder to a target-accent speaker using fewer than ten reference utterances, and employs large language model (LLM)-based phoneme editing to generate accent-conditioned pronunciations. The resulting synthetic speech is used to fine-tune a self-supervised ASR model. Experiments demonstrate consistent word error rate (WER) reductions on real accented speech, including cross-speaker evaluation and ultra-low data regimes. A matched-rate random phoneme baseline shows that phoneme-space perturbation itself is a strong form of augmentation, while LLM-guided edits provide additional gains through accent-conditioned structure.</p>
+        <p>Synthetic accented speech is a promising way to improve automatic speech recognition (ASR) when real accented recordings are scarce. We ask what makes such data useful for ASR fine-tuning: target-accent phoneme edits that expose the recognizer to accent-specific pronunciations, or random phoneme perturbations that act as augmentation in phoneme space. In a few-shot TTS pipeline, we compare LLM-generated accent edits with matched-rate random substitutions and oracle controls using ground-truth accented phonemes and prosody. Random substitutions recover much of the ASR gain: LLM target-accent edits improve over random by only a small margin, ground-truth phonemes stay close to the random baseline and nearly converge with it as the synthetic ASR fine-tuning set grows larger, and adding ground-truth prosody yields only a modest further gain. Mixing synthetic with real accented speech also stabilizes low-resource fine-tuning, but a fixed synthetic budget can later dilute the information in real data, showing that the real–synthetic ratio matters.</p>
       </div>
     </section>
 
@@ -244,7 +244,7 @@
         </div>
         <div class="condition">
           <h4>Adapt + LLM</h4>
-          <p>Adapted decoder with phonemes edited by an LLM toward the target accent — the proposed full system.</p>
+          <p>Adapted decoder with phonemes edited by an LLM toward the target accent.</p>
         </div>
         <div class="condition">
           <h4>Adapt + Random</h4>
@@ -252,7 +252,7 @@
         </div>
         <div class="condition">
           <h4>Adapt + GT (oracle)</h4>
-          <p>Adapted decoder with phonemes taken from the L2-ARCTIC ground-truth perceived canonical labels.</p>
+          <p>Adapted decoder with ground-truth accented phonemes from the L2-ARCTIC perceived phoneme labels (oracle upper bound).</p>
         </div>
         <div class="condition">
           <h4>Real accent</h4>
