@@ -6,7 +6,7 @@ Mark Hasegawa-Johnson, Dilek Hakkani-Tür, and Volodymyr Kindratenko.
 
 - 📄 Paper: https://arxiv.org/abs/2604.27273
 - 🌐 Live demo: https://claussss.github.io/few_shot_accent_synthesis_demo
-- 💻 Code: *coming soon*
+- 💻 Code: https://github.com/claussss/accented_Speech_for_ASR_what_helps_and_when
 - 🔊 Open `index.html` to listen to the audio samples.
 
 The page presents Indian English and Korean English samples for each Table 1 condition
